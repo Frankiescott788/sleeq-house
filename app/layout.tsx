@@ -16,21 +16,32 @@ export const viewport: Viewport = {
 }
 
 export const metadata: Metadata = {
-  title: 'Sleekhouse - Premium Web Solutions',
-  description: 'Modern, responsive web solutions crafted with precision and attention to detail.',
-  keywords: ['web development', 'design', 'modern', 'responsive'],
-  authors: [{ name: 'Sleekhouse Team' }],
+  title: 'SleeqHouse – Elevate Your Living Space',
+  description: 'SleeqHouse delivers premium, modern interior design solutions—sleek spaces tailored to how you live.',
+  applicationName: 'SleeqHouse',
+  keywords: ['interior design', 'modern home', 'premium interiors', 'sleek design'],
+  authors: [{ name: 'SleeqHouse Team' }],
   robots: 'index, follow',
   openGraph: {
-    title: 'Sleekhouse - Premium Web Solutions',
-    description: 'Modern, responsive web solutions crafted with precision and attention to detail.',
+    title: 'SleeqHouse – Elevate Your Living Space',
+    description: 'Premium interior design by SleeqHouse—where modern style meets everyday living.',
+    url: 'https://sleeq-house.vercel.app',
     type: 'website',
+    images: [
+      {
+        url: 'https://sleeq-house.vercel.app/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'Sleek modern interior living room by SleeqHouse',
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Sleekhouse - Premium Web Solutions',
-    description: 'Modern, responsive web solutions crafted with precision and attention to detail.',
-  }
+    title: 'SleeqHouse – Premium Interior Design',
+    description: 'Discover modern, stylish interiors by SleeqHouse.',
+    images: ['https://sleeq-house.vercel.app/og-image.png'],
+  },
 }
 
 export default function RootLayout({
@@ -40,7 +51,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={inter.variable}>
-      <body className={`${inter.className} `}>
+      <body className={inter.className}>
         <Navbar />
         <main className="min-h-screen">
           {children}
