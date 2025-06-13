@@ -1,4 +1,6 @@
 import AboutUs from "@/components/pages/home/about";
+import ContactSection from "@/components/pages/home/contact";
+import GallerySection from "@/components/pages/home/gallery";
 import HeroSection from "@/components/pages/home/heroSection";
 import ProcessSection from "@/components/pages/home/process";
 import ServicesSection from "@/components/pages/home/services";
@@ -11,7 +13,9 @@ export default function Home() {
             <AboutUs />
             <ServicesSection />
             <ProcessSection />
+            <GallerySection />
             <TestimonialsSection />
+            <ContactSection />
         </>
     )
 }

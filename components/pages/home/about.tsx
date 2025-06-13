@@ -3,8 +3,12 @@ import { ReactElement } from "react";
 import { Button, Image, Card, CardBody } from "@heroui/react";
 import { Clock, Users, Trophy, Star } from "lucide-react";
 import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
 
 export default function AboutUs(): ReactElement {
+
+  const router = useRouter();
+
   // Animation variants for cards
   const cardVariants = {
     hidden: { opacity: 0, y: 50, scale: 0.9 },
@@ -117,6 +121,7 @@ export default function AboutUs(): ReactElement {
                     radius="sm"
                     className="bg-primary text-white"
                     variant="shadow"
+                     onPress={() => router.push("/contact")}
                   >
                     Learn More
                   </Button>
@@ -137,9 +142,10 @@ export default function AboutUs(): ReactElement {
               transition={{ duration: 0.3 }}
             >
               <Image
-                src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                src="https://images.unsplash.com/photo-1592923750193-0caa23a10e1f?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8ODN8fHdvb2RlbiUyMG9mZmljZXxlbnwwfHwwfHx8MA%3D%3D"
                 className="w-full h-64 md:h-80 lg:h-96 object-cover rounded-lg"
                 shadow="sm"
+                isBlurred
               />
             </motion.div>
           </motion.div>

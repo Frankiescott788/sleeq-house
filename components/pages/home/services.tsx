@@ -3,8 +3,12 @@ import { ReactElement } from "react";
 import { Button, Card, CardBody } from "@heroui/react";
 import { ChefHat, Home, Palette, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
 
 export default function ServicesSection(): ReactElement {
+
+  const router = useRouter();
+
   // Animation variants for cards
   const cardVariants = {
     hidden: { opacity: 0, y: 50, scale: 0.9 },
@@ -87,6 +91,7 @@ export default function ServicesSection(): ReactElement {
                   variant="ghost" 
                   className="text-amber-600 hover:text-amber-700 p-0 font-medium"
                   endContent={<ArrowRight size={16} />}
+                   onPress={() => router.push("/contact")}
                 >
                   Book a Consultation
                 </Button>

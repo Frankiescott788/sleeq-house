@@ -4,6 +4,7 @@ import { ReactElement } from "react";
 import { Button, Card, CardBody } from "@heroui/react";
 import { Star, Quote } from "lucide-react";
 import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
 
 // Animation variants
 const containerVariants = {
@@ -35,6 +36,9 @@ interface Testimonial {
 }
 
 export default function TestimonialsSection(): ReactElement {
+
+  const router = useRouter();
+
   const testimonials: Testimonial[] = [
     {
       name: "Sarah Mitchell",
@@ -192,7 +196,7 @@ export default function TestimonialsSection(): ReactElement {
             Ready to create your own success story?
           </motion.p>
           <div>
-            <Button className="bg-amber-600 hover:bg-amber-700 text-white px-8 py-3 rounded-lg font-medium transition-colors duration-200">
+            <Button className="bg-amber-600 hover:bg-amber-700 text-white px-8 py-3 rounded-lg font-medium transition-colors duration-200"  onPress={() => router.push("/contact")}>
               Start Your Project
             </Button>
           </div>

@@ -4,8 +4,12 @@ import { ReactElement } from "react";
 import { Star1, Location } from "iconsax-reactjs";
 import { StartIcon } from "@/public/icons";
 import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
 
 export default function HeroSection(): ReactElement {
+
+  const router = useRouter();
+
   return (
     <section className="h-screen pb-4 pt-[9dvh] lg:pt-[12dvh] px-1 lg:px-4">
       <motion.div 
@@ -142,7 +146,9 @@ export default function HeroSection(): ReactElement {
               transition={{ type: "spring", stiffness: 300 }}
               className="w-full lg:w-auto"
             >
-              <Button className="bg-primary text-white w-full" size="lg" radius="sm">
+              <Button className="bg-primary text-white w-full" size="lg" radius="sm" 
+                onPress={() => router.push("/contact")}
+              >
                 Free Consultation
               </Button>
             </motion.div>
@@ -158,6 +164,7 @@ export default function HeroSection(): ReactElement {
                 variant="bordered"
                 size="lg"
                 radius="sm"
+                 onPress={() => router.push("/gallery")}
               >
                 View Our Work
               </Button>
