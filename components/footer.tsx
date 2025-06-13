@@ -62,7 +62,7 @@ export default function Footer(): ReactElement {
             {/* New Call/Message Section */}
             <h3 className="text-xl font-medium mb-4 mt-6 text-white">Call/Message</h3>
             <div className="flex gap-6">
-              <Link href="tel:+27815671101" className="text-white hover:text-gray-300 transition-colors">
+              <Link href="tel:070 403 3341" className="text-white hover:text-gray-300 transition-colors">
                 <Phone size={24} />
               </Link>
               <Link href="https://wa.me/270704033341" target="_blank" className="text-white hover:text-gray-300 transition-colors">
