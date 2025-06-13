@@ -31,26 +31,7 @@ export default function HeroSection(): ReactElement {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5, delay: 0.4 }}
             >
-              <div className="flex justify-center">
-                {[1, 2, 3, 4, 5].map((_, i) => (
-                  <motion.div
-                    key={i}
-                    initial={{ opacity: 0, scale: 0, rotate: -180 }}
-                    animate={{ opacity: 1, scale: 1, rotate: 0 }}
-                    transition={{ 
-                      duration: 0.4, 
-                      delay: 0.6 + (i * 0.1),
-                      type: "spring",
-                      stiffness: 200 
-                    }}
-                  >
-                    <StartIcon
-                      size={20}
-                      color="#d08700"
-                    />
-                  </motion.div>
-                ))}
-              </div>
+              
               <motion.p 
                 className="text-white"
                 initial={{ opacity: 0 }}

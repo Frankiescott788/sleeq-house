@@ -78,7 +78,7 @@ export default function ContactComponent(): ReactElement {
     {
       icon: Phone,
       title: "Call Us",
-      details: ["+27 81 567 1101", "Mon - Fri: 8:00 - 17:00"],
+      details: ["070 403 3341", "Mon - Fri: 8:00 - 17:00"],
       color: "text-blue-600"
     },
     {
