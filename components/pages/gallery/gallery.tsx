@@ -218,7 +218,7 @@ export default function GalleryComponent(): ReactElement {
               filteredProjects.map((project, index) => (
                 <Card
                   key={project.id}
-                  className="col-span-4 relative cursor-pointer"
+                  className="col-span-12 lg:col-span-4 relative cursor-pointer"
                   isPressable={true}
                   onPress={() => handleProjectClick(project)}
                 >
