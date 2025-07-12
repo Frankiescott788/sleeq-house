@@ -1,9 +1,12 @@
 "use client";
 
 import { ReactElement, useState } from "react";
-import { Button, Card, CardBody, Input, Textarea } from "@heroui/react";
-import { MapPin, Phone, Mail, Send } from "lucide-react";
+import { addToast, Button, Card, CardBody, Input, Textarea, Skeleton } from "@heroui/react";
+import { MapPin, Phone, Mail, Send, Clock } from "lucide-react";
 import { motion } from "framer-motion";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { sendMessage } from "@/actions/messages";
+import axios from "axios";
 
 // Animation variants
 const containerVariants = {
@@ -19,31 +22,95 @@ const containerVariants = {
 
 const cardVariants = {
   hidden: { opacity: 0, y: 30 },
-  visible: { 
-    opacity: 1, 
+  visible: {
+    opacity: 1,
     y: 0,
     transition: { duration: 0.6, type: "spring", stiffness: 100 }
   }
 };
 
-interface ContactForm {
-  name: string;
+export interface ContactForm {
+  fullName: string;
   email: string;
-  phone: string;
+  phoneNumber: string;
   projectType: string;
   message: string;
 }
 
+interface ContactSettings {
+  phone: string;
+  email: string;
+  address: string;
+  businessHours: {
+    [key: string]: {
+      open: string;
+      close: string;
+      closed: boolean;
+    };
+  };
+  responseTime: string;
+  updatedAt: string;
+}
+
+// Loading skeleton components
+const ContactInfoSkeleton = () => (
+  <Card className="bg-gray-50 h-full" shadow="sm">
+    <CardBody className="p-6">
+      <div className="flex items-start gap-4">
+        <Skeleton className="w-12 h-12 rounded-full" />
+        <div className="flex-1 space-y-2">
+          <Skeleton className="h-4 w-20" />
+          <Skeleton className="h-3 w-32" />
+          <Skeleton className="h-3 w-24" />
+        </div>
+      </div>
+    </CardBody>
+  </Card>
+);
+
 export default function ContactComponent(): ReactElement {
   const [formData, setFormData] = useState<ContactForm>({
-    name: "",
+    fullName: "",
     email: "",
-    phone: "",
+    phoneNumber: "",
     projectType: "",
     message: ""
   });
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  // Fetch contact settings
+  const contactQuery = useQuery({
+    queryKey: ["contact-settings"],
+    queryFn: async () => {
+      const response = await axios.get("/api/contact");
+      return response.data as ContactSettings;
+    }
+  });
+
+  const sendMessageMutation = useMutation({
+    mutationKey: ["message"],
+    mutationFn: sendMessage,
+    onSuccess: () => {
+      addToast({
+        title: "Message Sent",
+        description: "Your message was successfully sent to the SleeqHouse Team",
+        color: "success"
+      });
+      setFormData({
+        fullName: "",
+        email: "",
+        phoneNumber: "",
+        projectType: "",
+        message: ""
+      });
+    },
+    onError: () => {
+      addToast({
+        title: "Failed to send message",
+        description: "An unknown error occurred while trying to send message",
+        color: "danger"
+      });
+    }
+  });
 
   const handleInputChange = (field: keyof ContactForm, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -51,52 +118,65 @@ export default function ContactComponent(): ReactElement {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
-      // Simulate form submission
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    // Form submitted
-    setIsSubmitting(false);
-    
-    // Reset form
-    setFormData({
-      name: "",
-      email: "",
-      phone: "",
-      projectType: "",
-      message: ""
+    sendMessageMutation.mutate({
+      ...formData,
+      status: "unread",
+      createdAt: new Date().toISOString(),
+      readAt: "",
+      repliedAt: ""
     });
   };
 
-  const contactInfo = [
-    {
-      icon: MapPin,
-      title: "Visit Our Studio",
-      details: ["Batho, Bloemfontein", "Free State, South Africa"],
-      color: "text-amber-600"
-    },
-    {
-      icon: Phone,
-      title: "Call Us",
-      details: ["070 403 3341", "Mon - Fri: 8:00 - 17:00"],
-      color: "text-blue-600"
-    },
-    {
-      icon: Mail,
-      title: "Email Us",
-      details: ["info@sleeqhouse.co.za", "We'll respond within 24 hours"],
-      color: "text-green-600"
+  // Format business hours for display
+  const formatBusinessHours = (hours: ContactSettings['businessHours']) => {
+    const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+    const currentDayIndex = new Date().getDay(); // 0 = Sunday, 1 = Monday, etc.
+    const currentDay = days[currentDayIndex === 0 ? 6 : currentDayIndex - 1]; // Adjust for Sunday = 0
+
+    const todayHours = hours[currentDay];
+    if (todayHours?.closed) {
+      return "Closed today";
     }
-  ];
+
+    return `Open today: ${todayHours?.open} - ${todayHours?.close}`;
+  };
+
+  // Build contact info array dynamically
+  const getContactInfo = (settings: ContactSettings | undefined) => {
+    if (!settings) return [];
+
+    return [
+      {
+        icon: Phone,
+        title: "Call Us",
+        details: [
+          settings.phone,
+          formatBusinessHours(settings.businessHours)
+        ],
+        color: "text-blue-600"
+      },
+      {
+        icon: Mail,
+        title: "Email Us",
+        details: [
+          settings.email,
+          `We'll respond within ${settings.responseTime}`
+        ],
+        color: "text-green-600"
+      }
+    ];
+  };
+
+  const contactInfo = getContactInfo(contactQuery.data);
 
   return (
     <>
       {/* Hero Section */}
-      <section className="py-20 px-4 sm:px-6 md:px-8 lg:px-20  text-white relative overflow-hidden pt-[20dvh]">
+      <section className="py-20 px-4 sm:px-6 md:px-8 lg:px-20 text-white relative overflow-hidden pt-[20dvh]">
         <div className="absolute inset-0 z-10" />
 
         {/* Background Image */}
-        <div className="absolute inset-0 contact-hero bg-cover bg-center  flex items-center" />
+        <div className="absolute inset-0 contact-hero bg-cover bg-center flex items-center" />
 
         <div className="max-w-7xl mx-auto relative z-20 text-center">
           <motion.div
@@ -130,18 +210,18 @@ export default function ContactComponent(): ReactElement {
         </div>
       </section>
 
-      {/* Contact Section - Styled like home/contact */}
+      {/* Contact Section */}
       <section className="py-16 px-4 sm:px-6 md:px-8 lg:px-20 bg-[#faf8f5]">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
-          <motion.div 
+          <motion.div
             className="text-center mb-16"
             initial={{ opacity: 0, y: -30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.3 }}
             transition={{ duration: 0.6, ease: "easeOut" }}
           >
-            <motion.h2 
+            <motion.h2
               className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-6"
               initial={{ opacity: 0, scale: 0.9 }}
               whileInView={{ opacity: 1, scale: 1 }}
@@ -150,7 +230,7 @@ export default function ContactComponent(): ReactElement {
             >
               Let&apos;s Create Something Beautiful Together
             </motion.h2>
-            <motion.p 
+            <motion.p
               className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -171,7 +251,7 @@ export default function ContactComponent(): ReactElement {
             >
               <Card className="bg-white h-full" shadow="sm">
                 <CardBody className="lg:p-8">
-                  <motion.h3 
+                  <motion.h3
                     className="text-2xl font-bold text-gray-900 mb-6"
                     initial={{ opacity: 0 }}
                     whileInView={{ opacity: 1 }}
@@ -180,14 +260,14 @@ export default function ContactComponent(): ReactElement {
                   >
                     Start Your Project
                   </motion.h3>
-                  
+
                   <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <Input
                         label="Full Name"
-                        placeholder="Enter your name"
-                        value={formData.name}
-                        onChange={(e) => handleInputChange("name", e.target.value)}
+                        placeholder="Enter your full name"
+                        value={formData.fullName}
+                        onChange={(e) => handleInputChange("fullName", e.target.value)}
                         required
                         radius="sm"
                       />
@@ -201,13 +281,13 @@ export default function ContactComponent(): ReactElement {
                         radius="sm"
                       />
                     </div>
-                    
+
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <Input
                         label="Phone Number"
                         placeholder="+27 81 234 5678"
-                        value={formData.phone}
-                        onChange={(e) => handleInputChange("phone", e.target.value)}
+                        value={formData.phoneNumber}
+                        onChange={(e) => handleInputChange("phoneNumber", e.target.value)}
                         radius="sm"
                         required
                       />
@@ -220,7 +300,7 @@ export default function ContactComponent(): ReactElement {
                         required
                       />
                     </div>
-                    
+
                     <Textarea
                       label="Tell us about your project"
                       placeholder="Describe your vision, space requirements, timeline, and any specific needs..."
@@ -230,7 +310,7 @@ export default function ContactComponent(): ReactElement {
                       required
                       radius="sm"
                     />
-                    
+
                     <motion.div
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
@@ -241,10 +321,10 @@ export default function ContactComponent(): ReactElement {
                         className="bg-amber-600 hover:bg-amber-700 text-white w-full py-3 font-medium"
                         radius="sm"
                         size="lg"
-                        isLoading={isSubmitting}
-                        endContent={!isSubmitting && <Send className="w-4 h-4" />}
+                        isLoading={sendMessageMutation.isPending}
+                        endContent={!sendMessageMutation.isPending && <Send className="w-4 h-4" />}
                       >
-                        {isSubmitting ? "Sending..." : "Send Message"}
+                        {sendMessageMutation.isPending ? "Sending..." : "Send Message"}
                       </Button>
                     </motion.div>
                   </form>
@@ -260,7 +340,7 @@ export default function ContactComponent(): ReactElement {
               transition={{ duration: 0.8, ease: "easeOut" }}
             >
               <div className="space-y-6">
-                <motion.h3 
+                <motion.h3
                   className="text-2xl font-bold text-gray-900 mb-8"
                   initial={{ opacity: 0 }}
                   whileInView={{ opacity: 1 }}
@@ -270,45 +350,93 @@ export default function ContactComponent(): ReactElement {
                   Get in Touch
                 </motion.h3>
 
-                <motion.div 
+                <motion.div
                   className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-6"
                   variants={containerVariants}
                   initial="hidden"
                   whileInView="visible"
                   viewport={{ once: true, amount: 0.2 }}
                 >
-                  {contactInfo.map((info) => {
-                    const IconComponent = info.icon;
-                    
-                    return (
-                      <motion.div key={info.title} variants={cardVariants}>
-                        <Card className="bg-gray-50 h-full" shadow="sm">
-                          <CardBody className="p-6">
-                            <div className="flex items-start gap-4">
-                              <div className={`w-12 h-12 rounded-full bg-white flex items-center justify-center ${info.color}`}>
-                                <IconComponent className="w-6 h-6" />
+                  {contactQuery.isLoading ? (
+                    // Loading skeletons
+                    Array.from({ length: 3 }).map((_, index) => (
+                      <ContactInfoSkeleton key={index} />
+                    ))
+                  ) : contactQuery.isError ? (
+                    // Error state
+                    <Card className="bg-red-50 h-full" shadow="sm">
+                      <CardBody className="p-6 text-center">
+                        <p className="text-red-600">Failed to load contact information</p>
+                      </CardBody>
+                    </Card>
+                  ) : (
+                    // Actual data
+                    contactInfo.map((info) => {
+                      const IconComponent = info.icon;
+
+                      return (
+                        <motion.div key={info.title} variants={cardVariants}>
+                          <Card className="bg-gray-50 h-full" shadow="sm">
+                            <CardBody className="p-6">
+                              <div className="flex items-start gap-4">
+                                <div className={`w-12 h-12 rounded-full bg-white flex items-center justify-center ${info.color}`}>
+                                  <IconComponent className="w-6 h-6" />
+                                </div>
+                                <div>
+                                  <h4 className="font-semibold text-gray-900 mb-2">
+                                    {info.title}
+                                  </h4>
+                                  {info.details.map((detail, idx) => (
+                                    <p key={idx} className="text-gray-600 text-sm">
+                                      {detail}
+                                    </p>
+                                  ))}
+                                </div>
                               </div>
-                              <div>
-                                <h4 className="font-semibold text-gray-900 mb-2">
-                                  {info.title}
-                                </h4>
-                                {info.details.map((detail, idx) => (
-                                  <p key={idx} className="text-gray-600 text-sm">
-                                    {detail}
-                                  </p>
-                                ))}
-                              </div>
-                            </div>
-                          </CardBody>
-                        </Card>
-                      </motion.div>
-                    );
-                  })}
+                            </CardBody>
+                          </Card>
+                        </motion.div>
+                      );
+                    })
+                  )}
                 </motion.div>
+
+                {/* Business Hours Section */}
+                {contactQuery.data && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6, delay: 0.6 }}
+                  >
+                    <Card className="bg-white" shadow="sm">
+                      <CardBody className="p-6">
+                        <div className="flex items-start gap-4">
+                          <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center text-purple-600 border-2 border-purple-100">
+                            <Clock className="w-6 h-6" />
+                          </div>
+                          <div className="flex-1">
+                            <h4 className="font-semibold text-gray-900 mb-3">Business Hours</h4>
+                            <div className="grid grid-cols-1 gap-1">
+                              {Object.entries(contactQuery.data.businessHours).map(([day, hours]) => (
+                                <div key={day} className="flex justify-between text-sm">
+                                  <span className="capitalize text-gray-600">{day}:</span>
+                                  <span className={hours.closed ? "text-red-500" : "text-gray-900"}>
+                                    {hours.closed ? "Closed" : `${hours.open} - ${hours.close}`}
+                                  </span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      </CardBody>
+                    </Card>
+                  </motion.div>
+                )}
               </div>
             </motion.div>
           </div>
-          
+
           {/* Full Width Map Section */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -331,8 +459,25 @@ export default function ContactComponent(): ReactElement {
                     title="Sleeqhouse Studio Location - Batho, Bloemfontein"
                     className="absolute inset-0"
                   />
-                  
-                 
+
+                  {/* Map Overlay with Studio Info */}
+                  <div className="absolute top-4 left-4 z-10">
+                    <Card className="bg-white/95 backdrop-blur-sm" shadow="sm">
+                      <CardBody className="p-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 bg-amber-600 rounded-full flex items-center justify-center">
+                            <MapPin className="w-5 h-5 text-white" />
+                          </div>
+                          <div>
+                            <p className="font-semibold text-gray-900 text-sm">Sleeqhouse Studio</p>
+                            <p className="text-gray-600 text-xs">
+                              {contactQuery.data?.address || "Batho, Bloemfontein"}
+                            </p>
+                          </div>
+                        </div>
+                      </CardBody>
+                    </Card>
+                  </div>
                 </div>
               </CardBody>
             </Card>
