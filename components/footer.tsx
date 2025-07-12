@@ -152,8 +152,8 @@ export default function Footer(): ReactElement {
               { href: "/gallery", text: "Gallery" },
               { href: "/contact", text: "Contact" },
               { href: "/contact", text: "Consultation" }
-            ].map((link) => (
-              <li key={link.href}>
+            ].map((link, i) => (
+              <li key={i}>
                 <Link href={link.href} className="hover:text-gray-300 transition-colors">
                   {link.text}
                 </Link>
@@ -221,11 +221,11 @@ export default function Footer(): ReactElement {
               <div className="text-red-400 text-sm">Failed to load social links</div>
             ) : socialLinks.length > 0 ? (
               <div className="flex gap-4">
-                {socialLinks.map((social) => {
+                {socialLinks.map((social, i) => {
                   const IconComponent = social.icon;
                   return (
                     <Link
-                      key={social.name}
+                      key={i}
                       href={social.url}
                       target="_blank"
                       rel="noopener noreferrer"

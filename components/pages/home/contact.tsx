@@ -379,8 +379,8 @@ export default function ContactSection(): ReactElement {
                         <div className="flex-1">
                           <h4 className="font-semibold text-gray-900 mb-3">Business Hours</h4>
                           <div className="grid grid-cols-1 gap-1">
-                            {Object.entries(contactQuery.data.businessHours).map(([day, hours]) => (
-                              <div key={day} className="flex justify-between text-sm">
+                            {Object.entries(contactQuery.data.businessHours).map(([day, hours], i) => (
+                              <div key={i} className="flex justify-between text-sm">
                                 <span className="capitalize text-gray-600">{day}:</span>
                                 <span className={hours.closed ? "text-red-500" : "text-gray-900"}>
                                   {hours.closed ? "Closed" : `${hours.open} - ${hours.close}`}
