@@ -201,7 +201,7 @@ export default function TestimonialsSection(): ReactElement {
               {testimonialsQuery.data?.map((testimonial, index) => (
                 <motion.div
                   key={index}
-                  className="snap-start flex-shrink-0 w-[20rem]"
+                  className="snap-start flex-shrink-0 w-[20rem] lg:w-[24rem] py-4 px-2"
                   variants={cardVariants}
                 >
                   <Card className="bg-white h-[22rem]" shadow="sm">

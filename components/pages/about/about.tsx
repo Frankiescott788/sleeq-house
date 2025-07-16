@@ -116,7 +116,7 @@ export default function AboutComponent(): ReactElement {
         </div>
       </section>
 
-      <section className="py-16 px-4 sm:px-6 md:px-8 lg:px-20 bg-white">
+      {/* <section className="py-16 px-4 sm:px-6 md:px-8 lg:px-20 bg-white">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
             {stats.map((stat, index) => {
@@ -147,7 +147,7 @@ export default function AboutComponent(): ReactElement {
             })}
           </div>
         </div>
-      </section>
+      </section> */}
       <section className="px-2 lg:px-20 bg-[#faf8f5] py-10 lg:py-20">
         <div className="grid grid-cols-12 gap-4">
           <div className="col-span-12 lg:col-span-6 ">

@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+body {
+    overflow-x: hidden;
+}
+
 .hero-bg {
     background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url("https://plus.unsplash.com/premium_photo-1683140981344-e233598bd4a8?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTA3fHxibGFjayUyMHBlcnNvbiUyMGRvaW5nJTIwd29vZHxlbnwwfHwwfHx8MA%3D%3D");
     background-repeat: no-repeat;
