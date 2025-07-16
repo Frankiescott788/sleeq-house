@@ -33,11 +33,13 @@ export default function Navbar(): ReactElement {
             initial={{ y: -100, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.3, ease: "easeOut" }}
-            className="fixed top-0 right-0 left-0 flex justify-between items-center py-4 px-2 lg:px-20 bg-white z-50"
+            className="fixed top-0 left-0 right-0 w-full flex justify-between items-center py-4 px-2 lg:px-20 bg-white z-50 overflow-x-hidden"
+            style={{ minWidth: '100vw' }}
         >
             <motion.div
                 whileHover={{ scale: 1.05 }}
                 transition={{ duration: 0.2 }}
+                className="flex-shrink-0"
             >
                 <Link href="/">
                     <Image src={"/images/logo.png"} className="h-[2rem] lg:h-[3rem] object-cover"/>
@@ -46,7 +48,7 @@ export default function Navbar(): ReactElement {
             
             {/* Desktop Navigation */}
             <motion.ul 
-                className="hidden lg:flex items-center gap-6"
+                className="hidden lg:flex items-center gap-6 flex-shrink-0"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.2, duration: 0.3 }}
@@ -56,10 +58,11 @@ export default function Navbar(): ReactElement {
                         key={item.name}
                         whileHover={{ y: -2 }} 
                         transition={{ duration: 0.2 }}
+                    
                     >
                         <Link 
                             href={item.path}
-                            className={`relative transition-colors duration-200 ${
+                            className={`relative transition-colors duration-200 whitespace-nowrap ${
                                 isActiveLink(item.path) 
                                     ? 'text-primary font-semibold' 
                                     : 'text-gray-700 hover:text-primary'
@@ -79,7 +82,7 @@ export default function Navbar(): ReactElement {
             </motion.ul>
 
             {/* Desktop Button */}
-            <div className="hidden lg:flex items-center">
+            <div className="hidden lg:flex items-center flex-shrink-0">
                 <Button
                     className="bg-primary text-white"
                     radius="sm"
@@ -91,19 +94,20 @@ export default function Navbar(): ReactElement {
             </div>
            
             {/* Mobile Menu Button */}
-            <div className="flex lg:hidden gap-2">
+            <div className="flex lg:hidden gap-2 items-center flex-shrink-0">
                 <div className="lg:hidden">
                     <Button
                         className="bg-primary text-white"
                         radius="sm"
                         variant="shadow"
                         size="sm"
+                        onPress={() => router.push("/contact")}
                     >
                         Free Consultation
                     </Button>
                 </div>
                 <motion.button 
-                    className="lg:hidden"
+                    className="lg:hidden p-1"
                     onClick={() => setIsMenuOpen(!isMenuOpen)}
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
@@ -153,7 +157,10 @@ export default function Navbar(): ReactElement {
                                     className="bg-primary text-white w-full"
                                     radius="sm"
                                     variant="shadow"
-                                    onPress={() => router.push("/contact")}
+                                    onPress={() => {
+                                        router.push("/contact");
+                                        setIsMenuOpen(false);
+                                    }}
                                 >
                                     Free Consultation
                                 </Button>
